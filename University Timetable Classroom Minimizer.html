@@ -1,0 +1,213 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>University Timetable Classroom Minimizer</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f2f0ea;--card:#fff;--ink:#1a2238;--mut:#5b6580;--line:#dcd9cf;--brand:#17305f;--acc:#b8862b;--ok:#146c43;--bad:#b3261e;--okbg:#e3f3ea;--badbg:#fbe7e5}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1424;--card:#171f38;--ink:#e8ecf6;--mut:#9aa5c2;--line:#2b3658;--brand:#0b1630;--acc:#e0b04f;--ok:#6fd49c;--bad:#ff8a80;--okbg:#12301f;--badbg:#3a1a1a}}
+:root[data-theme="dark"]{--bg:#0e1424;--card:#171f38;--ink:#e8ecf6;--mut:#9aa5c2;--line:#2b3658;--brand:#0b1630;--acc:#e0b04f;--ok:#6fd49c;--bad:#ff8a80;--okbg:#12301f;--badbg:#3a1a1a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Georgia,serif}
+h1,h2,h3,button,table,input,select,.num{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+header{background:var(--brand);color:#fff;padding:26px 18px;border-bottom:4px solid var(--acc)}
+header h1{margin:0;font-size:clamp(21px,4vw,32px)}header p{margin:6px 0 0;opacity:.85;max-width:75ch}
+main{max-width:1150px;margin:0 auto;padding:6px 14px 50px}
+section{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px;margin-top:16px}
+h2{margin:0 0 12px;font-size:19px;color:var(--brand)}h3{margin:0 0 8px;font-size:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) h2{color:var(--acc)}}
+.flow{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:0;counter-reset:s}
+.flow li{flex:1 1 110px;border:1px solid var(--line);border-top:4px solid var(--acc);padding:8px 10px;border-radius:4px;font-size:13px;font-family:system-ui,sans-serif;counter-increment:s}
+.flow li:before{content:counter(s)".";color:var(--acc);font-weight:700;margin-right:4px}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:12.5px;color:var(--mut)}
+input,select{width:100%;min-width:64px;padding:5px 7px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);font-size:13px}
+button{cursor:pointer;border:1px solid var(--brand);background:var(--card);color:var(--ink);padding:7px 13px;border-radius:5px;font-size:13.5px}
+button.pri{background:var(--brand);color:#fff;font-weight:700;padding:12px 22px;font-size:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.pri{border-color:var(--acc)}}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:10px}.row label{font:13px system-ui,sans-serif;color:var(--mut);display:block}.row label input,.row label select{width:110px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px}
+.cc{border:1px solid var(--line);border-radius:6px;padding:14px;border-top:4px solid var(--acc);min-width:0}
+.hero{text-align:center;padding:10px 0}.hero .num{font-size:clamp(46px,10vw,84px);font-weight:800;color:var(--brand);line-height:1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero .num{color:var(--acc)}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.stat{border:1px solid var(--line);border-radius:6px;padding:10px;border-left:4px solid var(--acc)}.stat .num{font-size:26px;font-weight:700}.stat small{color:var(--mut);display:block}
+.msg{padding:12px 14px;border-radius:6px;font-family:system-ui,sans-serif;margin-top:8px}
+.okm{background:var(--okbg);color:var(--ok);border:1px solid var(--ok)}.badm{background:var(--badbg);color:var(--bad);border:1px solid var(--bad)}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.pill{padding:3px 10px;border-radius:12px;font:12px system-ui,sans-serif;background:var(--okbg);color:var(--ok);border:1px solid var(--ok)}
+.chip{display:inline-block;color:#fff;border-radius:3px;padding:1px 7px;font:12px system-ui,sans-serif;margin:1px 2px 1px 0}
+.note{color:var(--mut);font-size:13px}svg text{font-family:system-ui,sans-serif}
+.grid{min-width:640px}.grid td{border:1px solid var(--line);width:18%;min-height:50px}
+.bar{height:9px;background:var(--line);border-radius:5px;overflow:hidden;min-width:70px}.bar i{display:block;height:100%;background:var(--acc)}
+</style></head><body>
+<header><h1>University Timetable Classroom Minimizer</h1>
+<p>Greedy graph coloring assigns time slots, a greedy allocator fills and reuses rooms, and the scheduler searches for the fewest classrooms that still give a valid timetable.</p></header>
+<main>
+<section><h2>How it works</h2><ol class="flow">
+<li>Input courses and rooms</li><li>Create conflict graph</li><li>Graph coloring</li><li>Generate time slots</li><li>Greedy room allocation</li><li>Calculate minimum practical classrooms</li><li>Validate conflicts</li><li>Optimized timetable</li></ol></section>
+
+<section><h2>1. Input data</h2><div class="wrap"><table id="ct"></table></div>
+<div class="row"><button id="addC">Add course</button></div>
+<h3 style="margin-top:14px">Classrooms</h3><div class="wrap"><table id="rt"></table></div>
+<div class="row"><button id="addR">Add classroom</button></div>
+<h3 style="margin-top:14px">Working hours</h3>
+<div class="row"><label>Periods per day<select id="per"><option>6</option><option>7</option></select></label>
+<label>Day starts at (hour)<input id="start" type="number" min="6" max="12" value="9"></label>
+<label>Max time slots to use<input id="budget" type="number" min="1" max="35" value="6"></label></div>
+<p class="note">Time slot budget: the optimizer may spread classes over at most this many slots to cut rooms. A smaller budget means more simultaneous classes.</p></section>
+
+<section><h2>2. Generate timetable</h2>
+<div class="row"><button class="pri" id="gen">GENERATE OPTIMIZED TIMETABLE</button><button id="regen">Regenerate timetable</button><button id="reset">Reset sample data</button></div>
+<div class="pills" id="pipe"></div></section>
+
+<section><h2>3. Algorithm visualization</h2><div class="cards" id="viz"></div></section>
+<section><h2>4. Classroom minimization</h2><div id="min"></div></section>
+<section><h2>5. Final optimized timetable</h2><div class="wrap"><table id="final"></table></div>
+<h3 style="margin:16px 0 6px">Weekly view</h3><div class="wrap"><table class="grid" id="grid"></table></div></section>
+<section><h2>6. Conflict validation</h2><div id="chk"></div></section>
+</main>
+<script>
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+const SC=()=>[['Data Structures','Dr. Rao','CSE-A',55],['Database Systems','Dr. Sharma','CSE-B',50],['Operating Systems','Dr. Kumar','CSE-A',55],['Computer Networks','Dr. Priya','CSE-C',45],['Mathematics','Dr. Rao','CSE-C',45],['Python Programming','Dr. Mehta','CSE-B',50],['Software Engineering','Dr. Kumar','CSE-D',40],['Algorithms','Dr. Sharma','CSE-D',40]].map(([name,instr,group,n])=>({name,instr,group,n}));
+const SR=()=>[['Room 101',60],['Room 102',55],['Room 103',50],['Room 104',45],['Lab 201',60]].map(([name,cap])=>({name,cap}));
+let courses=SC(),rooms=SR(),R=null,sel=-1,seed=1;
+const cfg=()=>({P:+$('per').value,start:+$('start').value||9,budget:Math.max(1,+$('budget').value||6)});
+const $=id=>document.getElementById(id),norm=s=>String(s).trim().toLowerCase();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ccol=i=>`hsl(${(i*47+205)%360} 52% 38%)`;       // one color per course
+const rnd=()=>(seed=(seed*1664525+1013904223)>>>0)/4294967296;
+const slotOf=(c,P)=>({day:Math.floor(c/P),period:c%P});
+const tm=(p,s)=>`${String(s+p).padStart(2,'0')}:00-${String(s+p+1).padStart(2,'0')}:00`;
+const slotName=(c,P)=>{const s=slotOf(c,P);return (DAYS[s.day]||'Overflow').slice(0,3)+' P'+(s.period+1)};
+
+/* GRAPH COLORING (1/2): vertices = classes, edge = same group or same instructor */
+function buildConflictGraph(cs){
+  const edges=[],adj=cs.map(()=>[]);
+  for(let i=0;i<cs.length;i++)for(let j=i+1;j<cs.length;j++){
+    const why=[];
+    if(norm(cs[i].group)===norm(cs[j].group))why.push('same group '+cs[i].group);
+    if(norm(cs[i].instr)===norm(cs[j].instr))why.push('same instructor '+cs[i].instr);
+    if(why.length){edges.push({a:i,b:j,why});adj[i].push(j);adj[j].push(i);}
+  }return{n:cs.length,edges,adj};
+}
+/* GRAPH COLORING (2/2) + GREEDY: Welsh-Powell order (highest degree first), take the lowest
+   color no neighbour uses. Optional limits: max classes per color and max colors. */
+function greedyGraphColoring(g,cs,o={}){
+  const mp=o.maxPerSlot??Infinity,ms=o.maxSlots??Infinity,key=cs.map((_,i)=>o.shuffle?rnd():i);
+  const order=[...cs.keys()].sort((a,b)=>g.adj[b].length-g.adj[a].length||cs[b].n-cs[a].n||key[a]-key[b]);
+  const color=Array(g.n).fill(-1),count=[],steps=[];let ok=true;
+  for(const v of order){
+    const used=new Set(g.adj[v].map(u=>color[u]));let c=0;
+    while(c<ms&&(used.has(c)||(count[c]||0)>=mp))c++;
+    if(c>=ms){ok=false;continue;}
+    color[v]=c;count[c]=(count[c]||0)+1;steps.push({v,c});
+  }return{color,order,steps,ok,slots:ok?count.length:0};
+}
+/* SCHEDULING (1/2): each color becomes a (day, period) time slot */
+function assignTimeSlots(color,P){
+  const m=new Map();color.forEach((c,i)=>{if(!m.has(c))m.set(c,[]);m.get(c).push(i)});
+  return[...m.keys()].sort((a,b)=>a-b).map(c=>({c,...slotOf(c,P),classes:m.get(c)}));
+}
+/* GREEDY ALGORITHM: per slot, largest class first, first (smallest) free room that fits.
+   Rooms are free again in the next slot, which is how rooms get reused. */
+function allocateRoomsGreedy(color,cs,pool,P){
+  const byCap=pool.map(i=>({i,...rooms[i]})).sort((a,b)=>a.cap-b.cap),roomOf=Array(cs.length).fill(null),log=[];
+  for(const s of assignTimeSlots(color,P)){
+    const taken=new Set(),steps=[];
+    for(const i of [...s.classes].sort((a,b)=>cs[b].n-cs[a].n)){
+      const r=byCap.find(r=>!taken.has(r.i)&&r.cap>=cs[i].n);
+      if(r){taken.add(r.i);roomOf[i]=r.i;}steps.push({i,r:r?r.i:null});
+    }log.push({slot:s,steps});
+  }return{roomOf,log};
+}
+/* MINIMIZE CLASSROOMS: try k = lower bound, +1, ... For each k, color with at most k classes per slot
+   inside the slot budget, then allocate with the k largest rooms. First k that works is the minimum. */
+function minimizeClassrooms(cs,g,budgetSlots,P){
+  const order=rooms.map((_,i)=>i).sort((a,b)=>rooms[b].cap-rooms[a].cap),ms=Math.min(budgetSlots,5*P),tries=[];
+  const all=rooms.map((_,i)=>i),base=greedyGraphColoring(g,cs),baseAl=allocateRoomsGreedy(base.color,cs,all,P);
+  const baseline={slots:base.slots,rooms:new Set(baseAl.roomOf.filter(r=>r!==null)).size,maxSim:maxSim(base.color)};
+  for(let k=Math.max(1,Math.ceil(cs.length/ms));k<=rooms.length;k++){
+    const col=greedyGraphColoring(g,cs,{maxPerSlot:k,maxSlots:ms,shuffle:R&&R.regen});
+    if(!col.ok){tries.push({k,msg:'cannot fit within '+ms+' slots'});continue;}
+    const al=allocateRoomsGreedy(col.color,cs,order.slice(0,k),P);
+    if(al.roomOf.some(r=>r===null)){tries.push({k,msg:'a class is too large for the rooms'});continue;}
+    tries.push({k,msg:'feasible',ok:1});return{col,al,tries,baseline,fallback:false};
+  }
+  const al=allocateRoomsGreedy(base.color,cs,all,P);   // no feasible k: keep plain coloring, validator reports problems
+  return{col:base,al,tries,baseline,fallback:true};
+}
+function maxSim(color){const m={};color.forEach(c=>m[c]=(m[c]||0)+1);return Math.max(0,...Object.values(m))}
+
+/* VALIDATION */
+function validateConflicts(en,cs,P){
+  const v={instr:0,grp:0,room:0,cap:0,over:0,msgs:[]};
+  en.forEach((x,a)=>{
+    if(x.room===null){v.cap++;v.msgs.push(`${x.course} (${x.n}) has no room with enough capacity.`);}
+    else if(rooms[x.room].cap<x.n){v.cap++;v.msgs.push(`${x.course}: ${rooms[x.room].name} is too small.`);}
+    if(x.day>=5||x.period>=P){v.over++;v.msgs.push(`${x.course} does not fit in the working week.`);}
+    for(let b=a+1;b<en.length;b++){const y=en[b];if(x.slot!==y.slot)continue;const w=slotName(x.slot,P);
+      if(norm(x.instr)===norm(y.instr)){v.instr++;v.msgs.push(`Instructor clash: ${x.instr} has ${x.course} and ${y.course} at ${w}.`);}
+      if(norm(x.group)===norm(y.group)){v.grp++;v.msgs.push(`Group clash: ${x.group} has ${x.course} and ${y.course} at ${w}.`);}
+      if(x.room!==null&&x.room===y.room){v.room++;v.msgs.push(`Room clash: ${rooms[x.room].name} has ${x.course} and ${y.course} at ${w}.`);}
+    }});
+  v.total=v.instr+v.grp+v.room+v.cap+v.over;return v;
+}
+function calculateRoomUtilization(en,slots,P){
+  const used=[...new Set(en.map(e=>e.room).filter(r=>r!==null))],placed=en.filter(e=>e.room!==null).length;
+  return{used:used.length,pct:used.length&&slots?placed/(used.length*slots)*100:0,
+    per:used.map(r=>({r,list:en.filter(e=>e.room===r).sort((a,b)=>a.slot-b.slot)}))};
+}
+/* SCHEDULING (2/2): combine coloring + allocation into the timetable */
+function generateTimetable(regen){
+  if(regen)seed=Date.now()%100000;else seed=1;
+  const c=cfg(),cs=courses.map(x=>({...x,n:+x.n||0}));
+  rooms=rooms.map(r=>({...r,cap:+r.cap||0}));
+  R={regen,c};
+  const g=buildConflictGraph(cs),m=minimizeClassrooms(cs,g,c.budget,c.P),slots=assignTimeSlots(m.col.color,c.P);
+  const en=cs.map((x,i)=>({i,course:x.name,instr:x.instr,group:x.group,n:x.n,slot:m.col.color[i],...slotOf(m.col.color[i],c.P),room:m.al.roomOf[i]}));
+  const v=validateConflicts(en,cs,c.P),u=calculateRoomUtilization(en,slots.length,c.P);
+  R={regen,c,cs,g,m,slots,en,v,u,sim:maxSim(m.col.color)};render();
+}
+
+/* RENDERING */
+function renderInputs(){
+  $('ct').innerHTML='<tr><th>Course</th><th>Instructor</th><th>Group</th><th>Students</th><th></th></tr>'+courses.map((c,i)=>`<tr>`+['name','instr','group'].map(k=>`<td><input data-t="c" data-i="${i}" data-k="${k}" value="${esc(c[k])}"></td>`).join('')+`<td><input type="number" min="1" data-t="c" data-i="${i}" data-k="n" value="${c.n}"></td><td><button data-del="c" data-i="${i}">Delete</button></td></tr>`).join('');
+  $('rt').innerHTML='<tr><th>Room</th><th>Capacity</th><th></th></tr>'+rooms.map((r,i)=>`<tr><td><input data-t="r" data-i="${i}" data-k="name" value="${esc(r.name)}"></td><td><input type="number" min="1" data-t="r" data-i="${i}" data-k="cap" value="${r.cap}"></td><td><button data-del="r" data-i="${i}">Delete</button></td></tr>`).join('');
+}
+function svgGraph(){
+  const{cs,g,m,c}=R,n=cs.length,cx=250,cy=150,pos=cs.map((_,i)=>{const a=2*Math.PI*i/n-Math.PI/2;return[cx+190*Math.cos(a),cy+105*Math.sin(a)]});
+  const sc=k=>`hsl(${(k*83+30)%360} 60% 40%)`;
+  let s=g.edges.map(e=>{const h=sel>=0&&(e.a===sel||e.b===sel);return`<line x1="${pos[e.a][0]}" y1="${pos[e.a][1]}" x2="${pos[e.b][0]}" y2="${pos[e.b][1]}" stroke="${h?'#b8862b':'#8a93a8'}" stroke-width="${h?4:2}"><title>${esc(cs[e.a].name)} - ${esc(cs[e.b].name)}: ${esc(e.why.join(', '))}</title></line>`}).join('');
+  s+=cs.map((x,i)=>{const[X,Y]=pos[i],k=m.col.color[i];return`<g data-n="${i}" style="cursor:pointer"><circle cx="${X}" cy="${Y}" r="20" fill="${sc(k)}" stroke="${sel===i?'#b8862b':'#fff'}" stroke-width="${sel===i?4:2}"/><text x="${X}" y="${Y+4}" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">${k<0?'?':'T'+(k+1)}</text><text x="${X}" y="${Y+34}" text-anchor="middle" fill="currentColor" font-size="10">${esc(x.name.length>14?x.name.slice(0,13)+'…':x.name)}</text></g>`}).join('');
+  return`<svg viewBox="0 0 500 300" width="100%" role="img" aria-label="Conflict graph">${s}</svg>`;
+}
+function render(){
+  const{cs,g,m,slots,en,v,u,sim,c}=R,P=c.P,rn=i=>i===null?'<b style="color:var(--bad)">none</b>':esc(rooms[i].name);
+  $('pipe').innerHTML=['Conflict graph built','Greedy coloring done','Time slots assigned','Rooms allocated','Minimum rooms calculated','Conflicts validated','Timetable ready'].map(t=>`<span class="pill">✓ ${t}</span>`).join('');
+  $('viz').innerHTML=`<div class="cc"><h3>GRAPH COLORING</h3><p class="note"><b>${cs.length}</b> classes · <b>${g.edges.length}</b> conflicts · <b>${m.col.slots}</b> colors used · <b>${slots.length}</b> time slots. Click a node to highlight its conflicts.</p>${svgGraph()}
+  <div class="note">${sel>=0?`<b>${esc(cs[sel].name)}</b> conflicts with: ${g.adj[sel].map(j=>esc(cs[j].name)).join(', ')||'nothing'}`:g.edges.map(e=>`${esc(cs[e.a].name)} ↔ ${esc(cs[e.b].name)} (${esc(e.why.join(', '))})`).join('<br>')||'No conflicts.'}</div></div>
+  <div class="cc"><h3>GREEDY ALGORITHM</h3><p class="note">Slot by slot, largest class first, first free room that fits. Rooms are released after each slot and reused.</p><div class="wrap"><table><tr><th>Slot</th><th>Processing order → room</th></tr>${m.al.log.map(l=>`<tr><td>T${l.slot.c+1}<br><span class="note">${slotName(l.slot.c,P)}</span></td><td>${l.steps.map(s=>`${esc(cs[s.i].name)} (${cs[s.i].n}) → ${rn(s.r)}`).join('<br>')}</td></tr>`).join('')}</table></div>
+  <p class="note">Available: ${rooms.map(r=>esc(r.name)+' ('+r.cap+')').join(', ')}</p><p class="note"><b>Reuse:</b> ${u.per.map(p=>`${esc(rooms[p.r].name)} used in ${p.list.length} slot(s)`).join('; ')}</p></div>
+  <div class="cc"><h3>SCHEDULING</h3><p class="note">Colors become time slots: color 1 → Monday P1, color 2 → Monday P2, and so on, ${P} periods per day.</p><div class="wrap"><table><tr><th>Day</th><th>Period</th><th>Course</th><th>Instructor</th><th>Group</th><th>Room</th></tr>${[...en].sort((a,b)=>a.slot-b.slot).map(e=>`<tr><td>${DAYS[e.day]||'—'}</td><td>${e.period+1}</td><td>${esc(e.course)}</td><td>${esc(e.instr)}</td><td>${esc(e.group)}</td><td>${rn(e.room)}</td></tr>`).join('')}</table></div></div>`;
+  const avail=rooms.length,b=m.baseline;
+  $('min').innerHTML=`<div class="hero"><div class="note">Minimum Classrooms Required</div><div class="num">${u.used}</div><div class="note">Calculated by the algorithm from your data, not fixed in the code. Change the courses, rooms or slot budget and generate again.</div></div>
+  <div class="stats"><div class="stat"><div class="num">${avail}</div><small>Available classrooms</small></div><div class="stat"><div class="num">${u.used}</div><small>Classrooms required</small></div><div class="stat"><div class="num">${Math.max(0,avail-u.used)}</div><small>Classrooms saved</small></div><div class="stat"><div class="num">${sim}</div><small>Max simultaneous classes</small></div><div class="stat"><div class="num">${u.pct.toFixed(0)}%</div><small>Room utilization</small></div><div class="stat"><div class="num">${slots.length}</div><small>Time slots used</small></div></div>
+  <h3 style="margin-top:14px">Slot load</h3><p class="note">${slots.map(s=>`T${s.c+1} → ${s.classes.length} class(es) → ${s.classes.length} room(s)`).join(' · ')}. Rooms required = highest load = <b>${sim}</b>.</p>
+  <h3>How the minimum was found</h3><p class="note">${m.tries.map(t=>`${t.k} room(s): ${t.msg}`).join(' → ')||'—'}${m.fallback?'. No valid limit found, so plain coloring was kept.':''}<br>Plain greedy coloring alone (no room limit) uses ${b.slots} slots and needs ${b.rooms} rooms with ${b.maxSim} classes at once.</p>`;
+  $('final').innerHTML='<tr><th>Day</th><th>Period</th><th>Time</th><th>Course</th><th>Instructor</th><th>Group</th><th>Room</th></tr>'+[...en].sort((a,b)=>a.slot-b.slot||a.i-b.i).map(e=>`<tr><td>${DAYS[e.day]||'—'}</td><td>${e.period+1}</td><td>${tm(e.period,c.start)}</td><td><span class="chip" style="background:${ccol(e.i)}">${esc(e.course)}</span></td><td>${esc(e.instr)}</td><td>${esc(e.group)}</td><td>${rn(e.room)}</td></tr>`).join('');
+  let gr='<tr><th>Period</th>'+DAYS.map(d=>`<th>${d.slice(0,3)}</th>`).join('')+'</tr>';
+  for(let p=0;p<P;p++)gr+=`<tr><th>P${p+1}<br>${tm(p,c.start)}</th>`+DAYS.map((_,d)=>`<td>${en.filter(e=>e.day===d&&e.period===p).map(e=>`<span class="chip" style="background:${ccol(e.i)}">${esc(e.course)}<br>${e.room===null?'no room':esc(rooms[e.room].name)}</span>`).join('')}</td>`).join('')+'</tr>';
+  $('grid').innerHTML=gr;
+  const row=(n,t)=>`<li>${n?'❌':'✓'} ${t}: ${n?n+' found':'none'}</li>`;
+  $('chk').innerHTML=`<ul style="list-style:none;padding:0;font-family:system-ui,sans-serif">${row(v.instr,'Instructor conflicts')}${row(v.grp,'Student group conflicts')}${row(v.room,'Room conflicts')}${row(v.cap,'Capacity conflicts')}${row(v.over,'Classes outside working days or periods')}</ul>`+(v.total?`<div class="msg badm"><b>${v.total} conflict(s) detected.</b><ul>${v.msgs.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>Use "Regenerate timetable" to try another arrangement, or add rooms or slots.</div>`:'<div class="msg okm"><b>✓ No conflicts detected</b></div>');
+}
+document.addEventListener('input',e=>{const t=e.target.dataset;if(t.t)(t.t==='c'?courses:rooms)[t.i][t.k]=e.target.value});
+document.addEventListener('click',e=>{const d=e.target.closest('[data-del]'),n=e.target.closest('[data-n]');
+  if(d){(d.dataset.del==='c'?courses:rooms).splice(+d.dataset.i,1);renderInputs();}
+  if(n){sel=sel===+n.dataset.n?-1:+n.dataset.n;render();}});
+$('addC').onclick=()=>{courses.push({name:'New course',instr:'Dr. New',group:'CSE-E',n:40});renderInputs();};
+$('addR').onclick=()=>{rooms.push({name:'Room '+(105+rooms.length),cap:50});renderInputs();};
+$('gen').onclick=()=>{sel=-1;generateTimetable(false);$('min').scrollIntoView({behavior:'smooth'});};
+$('regen').onclick=()=>{sel=-1;generateTimetable(true);};
+$('reset').onclick=()=>{courses=SC();rooms=SR();$('per').value=6;$('start').value=9;$('budget').value=6;renderInputs();generateTimetable(false);};
+renderInputs();generateTimetable(false);
+</script></body></html>
